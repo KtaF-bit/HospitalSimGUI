@@ -4,8 +4,12 @@
  */
 package nz.ac.aut.comp603.hospitalsimgui.view;
 
+import java.awt.Color;
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Graphics;
+import nz.ac.aut.comp603.hospitalsimgui.controller.HospitalController;
+import nz.ac.aut.comp603.hospitalsimgui.model.*;
+import java.util.*;
 
 /**
  *
@@ -13,13 +17,31 @@ import java.awt.*;
  */
 public class HospitalGUI extends JFrame {
 
+    private final HospitalController controller;
+    
     public HospitalGUI() {
         setTitle("Hospital Simulator");
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         
-        add(new HospitalPanel());
+        // Create Rooms
+        List<Room> rooms = new ArrayList<>();
+        rooms.add(new Room(Set.of(1)));
+        rooms.add(new Room(Set.of(1,2)));
+        rooms.add(new Room(Set.of(1,2)));
+        rooms.add(new Room(Set.of(2,3)));
+        rooms.add(new Room(Set.of(3)));
+        
+        // Create Doctors
+        List<Doctor> doctors = new ArrayList<>();
+        doctors.add(new Doctor(Set.of(1,2)));
+        doctors.add(new Doctor(Set.of(1,2)));
+        doctors.add(new Doctor(Set.of(2,3)));
+        
+        controller = new HospitalController(rooms, doctors);
+        
+        add(new HospitalPanel(controller));
         
         setVisible(true);
     }   
@@ -27,6 +49,13 @@ public class HospitalGUI extends JFrame {
 
 class HospitalPanel extends JPanel {
     
+    private final HospitalController controller;
+    
+    
+    public HospitalPanel(HospitalController controller) {
+            this.controller = controller;
+        }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

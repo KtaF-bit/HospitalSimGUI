@@ -48,7 +48,7 @@ public class HospitalController {
     }
     
     private void progressRooms() {
-        System.out.println("→ TREATING PATIENTS");
+        // System.out.println("→ TREATING PATIENTS");
         for (Room room : rooms) {
             room.incrementWaitTime();
             room.progressTreatment();
@@ -76,11 +76,9 @@ public class HospitalController {
 
                     waitingRoom.remove(selected);
                     room.assignPatient(selected);
-
                     System.out.println(
                         "Patient (Level " + selected.getSicknessLevel() +
-                        ") moved from Waiting Room to Room " + (i + 1)
-                    );
+                        ") moved from Waiting Room to Room " + (i + 1));
                 }
             }
         }
@@ -116,7 +114,6 @@ public class HospitalController {
                 }
 
                 room.assignPatient(p);
-
                 System.out.println("Patient (Level " 
                     + p.getSicknessLevel() + ") moved directly to Room");
 
@@ -136,7 +133,7 @@ public class HospitalController {
                 }
 
                 addToWaitingRoom(p);
-
+                
                 System.out.println("Patient (Level " 
                     + p.getSicknessLevel() + ") moved to Waiting Room");
 
@@ -169,33 +166,6 @@ public class HospitalController {
             waitingRoom.add(p);
         }
     }
-    
-//    private void movePatientsToRooms() {
-//        System.out.println("→ MOVING PATIENTS TO ROOM");
-//        for (Room room : rooms) {
-//
-//           // Only work with free rooms
-//           if (room.isFree()) {
-//
-//               Patient p = null;
-//
-//               // Try priority queue first
-//               if (!priorityQueue.isEmpty() && room.canTreat(priorityQueue.peek().getSicknessLevel())) {
-//                   p = priorityQueue.poll();
-//               }
-//               
-//               // Otherwise try normal queue
-//               else if (!normalQueue.isEmpty() && room.canTreat(normalQueue.peek().getSicknessLevel())) {
-//                   p = normalQueue.poll();
-//               }
-//
-//               // If we found a suitable patient, assign them
-//               if (p != null) {
-//                   room.assignPatient(p);
-//               }
-//           }
-//       }
-//    }
 
 private void assignDoctorsToRooms() {
 
@@ -206,23 +176,26 @@ private void assignDoctorsToRooms() {
         if (doctor.isBusy()) continue;
 
         Room bestRoom = null;
+        int maxWait = -1;
 
-        // ✅ 1. First: look for LEVEL 3 patients
+        // ✅ STEP 1: find BEST Level 3 room (longest wait)
         for (Room room : rooms) {
             if (room.getPatient() != null &&
                 room.getDoctor() == null &&
                 room.getPatient().getSicknessLevel() == Patient.SICKNESS_3 &&
                 doctor.canTreat(Patient.SICKNESS_3)) {
 
-                bestRoom = room;
-                break; // level 3 found → highest priority
+                if (room.getWaitTime() > maxWait) {
+                    maxWait = room.getWaitTime();
+                    bestRoom = room;
+                }
             }
         }
 
-        // ✅ 2. If no level 3, find longest waiting patient
+        // ✅ STEP 2: if no Level 3 found → use general longest wait
         if (bestRoom == null) {
 
-            int maxWait = -1;
+            maxWait = -1;
 
             for (Room room : rooms) {
                 if (room.getPatient() != null &&
@@ -237,13 +210,15 @@ private void assignDoctorsToRooms() {
             }
         }
 
-        // ✅ Assign doctor if found a room
+        // ✅ ASSIGN
         if (bestRoom != null) {
             bestRoom.assignDoctor(doctor);
 
-            System.out.println("Doctor assigned to Room for Patient (Level "
+            System.out.println(
+                "Doctor assigned to Room for Patient (Level "
                 + bestRoom.getPatient().getSicknessLevel()
-                + ", Wait=" + bestRoom.getWaitTime() + ")");
+                + ", Wait=" + bestRoom.getWaitTime() + ")"
+            );
         }
     }
 }
@@ -255,6 +230,22 @@ private void assignDoctorsToRooms() {
         moveWaitingRoomToRooms();
         moveOutsidePatients();
         assignDoctorsToRooms();
+    }
+    
+    public List<Room> getRooms() {
+        return rooms;
+    }
+
+    public int getWaitingRoomSize() {
+        return waitingRoom.size();
+    }
+
+    public int getPriorityQueueSize() {
+        return priorityQueue.size();
+    }
+
+    public int getNormalQueueSize() {
+        return normalQueue.size();
     }
 }
 

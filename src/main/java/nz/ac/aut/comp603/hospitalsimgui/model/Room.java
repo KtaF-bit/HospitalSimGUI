@@ -96,9 +96,16 @@ public class Room {
     // ✅ Progress treatment (important)
     public void progressTreatment() {
         if (patient != null && doctor != null) {
+
             patient.reduceTreatmentTime();
 
+            System.out.println("Treating patient (Level " + patient.getSicknessLevel() 
+                + ") - Time left: " + patient.getTreatmentTime());
+
             if (patient.isTreated()) {
+
+                System.out.println("Patient (Level " + patient.getSicknessLevel() + ") DISCHARGED");
+
                 removeDoctor();
                 removePatient();
             }

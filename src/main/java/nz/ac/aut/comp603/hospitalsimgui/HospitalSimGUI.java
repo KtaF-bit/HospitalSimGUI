@@ -21,34 +21,50 @@ public class HospitalSimGUI {
 
     
     public static void main(String[] args) {
-//
-//        // Create rooms
-//        List<Room> rooms = new ArrayList<>();
-//        rooms.add(new Room(Set.of(1, 2)));
-//        rooms.add(new Room(Set.of(2, 3)));
-//
-//        // Create doctors
-//        List<Doctor> doctors = new ArrayList<>();
-//        doctors.add(new Doctor(Set.of(1, 2)));
-//        doctors.add(new Doctor(Set.of(2, 3)));
-//
-//        // Create controller
-//        HospitalController controller = new HospitalController(rooms, doctors);
-//
-//        // Add some patients
-//        controller.addPatient(1);
-//        controller.addPatient(3);
-//        controller.addPatient(2);
-//
-//        // Run a few ticks
-//        for (int i = 0; i < 5; i++) {
-//            System.out.println("Tick " + i);
-//            controller.nextTick();
-//        }
+        // Create rooms
+        List<Room> rooms = new ArrayList<>();
+        rooms.add(new Room(Set.of(1,2))); // Room 1
+        rooms.add(new Room(Set.of(1,2))); // Room 2
+        rooms.add(new Room(Set.of(1)));   // Room 3
+        rooms.add(new Room(Set.of(2,3))); // Room 4
+        rooms.add(new Room(Set.of(3)));   // Room 5
 
-        SwingUtilities.invokeLater(() -> {
-            new HospitalGUI();
-        });
+        // Create doctors
+        List<Doctor> doctors = new ArrayList<>();
+        doctors.add(new Doctor(Set.of(1,2))); // Doctor 1
+        doctors.add(new Doctor(Set.of(1,2))); // Doctor 2
+        doctors.add(new Doctor(Set.of(2,3))); // Doctor 3
+
+        HospitalController controller = new HospitalController(rooms, doctors);
+
+        // Add patients (designed to test everything)
+        
+        controller.addPatient(1);
+        controller.addPatient(2);
+        controller.addPatient(3);
+        controller.addPatient(1);
+        controller.addPatient(3);
+        controller.addPatient(2);
+        controller.addPatient(1);
+        controller.addPatient(2);
+        controller.addPatient(3);
+        controller.addPatient(1);
+
+
+        // Run simulation
+        for (int i = 1; i <= 10; i++) {
+
+            System.out.println("\n========== TICK " + i + " ==========");
+
+            controller.nextTick();
+
+            System.out.println("Tick complete.\n");
+        }
+
+
+//        SwingUtilities.invokeLater(() -> {
+//            new HospitalGUI();
+//        });
         
     }
 

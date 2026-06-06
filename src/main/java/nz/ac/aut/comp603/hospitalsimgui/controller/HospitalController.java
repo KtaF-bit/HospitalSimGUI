@@ -56,16 +56,31 @@ public class HospitalController {
     }
 
     private void moveWaitingRoomToRooms() {
-        
-        for (Room room : rooms) {
-            
-            if (room.isFree() && !waitingRoom.isEmpty()) {
-                
-                Patient p = waitingRoom.peek();
-                
-                if (room.canTreat(p.getSicknessLevel())) {
-                    waitingRoom.poll();
-                    room.assignPatient(p);
+
+        for (int i = 0; i < rooms.size(); i++) {
+
+            Room room = rooms.get(i);
+
+            if (room.isFree()) {
+
+                Patient selected = null;
+
+                for (Patient p : waitingRoom) {
+                    if (room.canTreat(p.getSicknessLevel())) {
+                        selected = p;
+                        break;
+                    }
+                }
+
+                if (selected != null) {
+
+                    waitingRoom.remove(selected);
+                    room.assignPatient(selected);
+
+                    System.out.println(
+                        "Patient (Level " + selected.getSicknessLevel() +
+                        ") moved from Waiting Room to Room " + (i + 1)
+                    );
                 }
             }
         }
@@ -73,42 +88,66 @@ public class HospitalController {
     
     
     private void moveOutsidePatients() {
-        
+
+    while (true) {
+
         Patient p = null;
-        
-        // Priority Queue First
+
+        // Pick next patient (priority first)
         if (!priorityQueue.isEmpty()) {
             p = priorityQueue.peek();
         } else if (!normalQueue.isEmpty()) {
             p = normalQueue.peek();
         }
-        
-        if (p == null) return;
-        
+
+        // No more patients outside
+        if (p == null) break;
+
+        boolean moved = false;
+
+        // ✅ Try to move into a room
         for (Room room : rooms) {
             if (room.isFree() && room.canTreat(p.getSicknessLevel())) {
+
                 if (p.getSicknessLevel() == Patient.SICKNESS_3) {
                     priorityQueue.poll();
                 } else {
                     normalQueue.poll();
                 }
-            
+
                 room.assignPatient(p);
-                return;
+
+                System.out.println("Patient (Level " 
+                    + p.getSicknessLevel() + ") moved directly to Room");
+
+                moved = true;
+                break;
             }
         }
-        
-        if (waitingRoom.size() < WAITING_ROOM_CAPACITY) {
-            
-            if (p.getSicknessLevel() == Patient.SICKNESS_3) {
-                priorityQueue.poll();
-            } else {
-                normalQueue.poll();
+
+        // ✅ If not moved → try waiting room
+        if (!moved) {
+            if (waitingRoom.size() < WAITING_ROOM_CAPACITY) {
+
+                if (p.getSicknessLevel() == Patient.SICKNESS_3) {
+                    priorityQueue.poll();
+                } else {
+                    normalQueue.poll();
+                }
+
+                addToWaitingRoom(p);
+
+                System.out.println("Patient (Level " 
+                    + p.getSicknessLevel() + ") moved to Waiting Room");
+
+                moved = true;
             }
-            
-            addToWaitingRoom(p);
         }
+
+        // ✅ If couldn't move anywhere → stop
+        if (!moved) break;
     }
+}
     
     private void addToWaitingRoom(Patient p) {
         
@@ -158,24 +197,56 @@ public class HospitalController {
 //       }
 //    }
 
-    private void assignDoctorsToRooms() {
-        System.out.println("→ ASSIGNING DOCTORS");
+private void assignDoctorsToRooms() {
+
+    System.out.println("→ ASSIGNING DOCTORS");
+
+    for (Doctor doctor : doctors) {
+
+        if (doctor.isBusy()) continue;
+
+        Room bestRoom = null;
+
+        // ✅ 1. First: look for LEVEL 3 patients
         for (Room room : rooms) {
+            if (room.getPatient() != null &&
+                room.getDoctor() == null &&
+                room.getPatient().getSicknessLevel() == Patient.SICKNESS_3 &&
+                doctor.canTreat(Patient.SICKNESS_3)) {
 
-            // Room must have a patient but no doctor
-            if (room.getPatient() != null && room.getDoctor() == null) {
+                bestRoom = room;
+                break; // level 3 found → highest priority
+            }
+        }
 
-                for (Doctor doctor : doctors) {
+        // ✅ 2. If no level 3, find longest waiting patient
+        if (bestRoom == null) {
 
-                    // Doctor must be free and able to treat the patient
-                    if (!doctor.isBusy() && doctor.canTreat(room.getPatient().getSicknessLevel())) {
-                        room.assignDoctor(doctor);
-                        break; // Move to next room once assigned
+            int maxWait = -1;
+
+            for (Room room : rooms) {
+                if (room.getPatient() != null &&
+                    room.getDoctor() == null &&
+                    doctor.canTreat(room.getPatient().getSicknessLevel())) {
+
+                    if (room.getWaitTime() > maxWait) {
+                        maxWait = room.getWaitTime();
+                        bestRoom = room;
                     }
                 }
             }
         }
+
+        // ✅ Assign doctor if found a room
+        if (bestRoom != null) {
+            bestRoom.assignDoctor(doctor);
+
+            System.out.println("Doctor assigned to Room for Patient (Level "
+                + bestRoom.getPatient().getSicknessLevel()
+                + ", Wait=" + bestRoom.getWaitTime() + ")");
+        }
     }
+}
 
     public void nextTick() {
         tick++;

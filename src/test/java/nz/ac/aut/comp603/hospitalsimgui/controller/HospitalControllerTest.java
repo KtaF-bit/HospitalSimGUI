@@ -148,4 +148,61 @@ public class HospitalControllerTest {
 
         assertTrue(controller.getTotalPatientsTreated() > 0);
     }
+    
+    // TEST 8: Database stores patient
+    @Test
+    public void testDatabaseStoresPatient() {
+        HospitalController controller = createController();
+
+        controller.addPatient(1);
+
+        // run enough ticks for discharge
+        for (int i = 0; i < 50; i++) {
+            controller.nextTick();
+        }
+
+        // DB should now have stored at least 1 patient
+        assertTrue(controller.getTotalPatientsFromDB() > 0);
+    }
+    
+    // TEST 9: Database matches treatments
+    @Test
+    public void testDatabaseMatchesTreatedCount() {
+        HospitalController controller = createController();
+
+        controller.addPatient(1);
+        controller.addPatient(2);
+
+        for (int i = 0; i < 50; i++) {
+            controller.nextTick();
+        }
+
+        int treated = controller.getTotalPatientsTreated();
+        int stored = controller.getTotalPatientsFromDB();
+
+        // DB should store at least as many completed treatments
+        assertTrue(stored >= treated);
+    }
+    
+    // TEST 10: Database persists across controller instances
+    @Test
+    public void testDatabasePersistsData() {
+        HospitalController controller1 = createController();
+
+        controller1.addPatient(1);
+
+        for (int i = 0; i < 50; i++) {
+            controller1.nextTick();
+        }
+
+        int storedBefore = controller1.getTotalPatientsFromDB();
+
+        // Create new controller (simulates restart)
+        HospitalController controller2 = createController();
+
+        int storedAfter = controller2.getTotalPatientsFromDB();
+
+        // Data should persist
+        assertTrue(storedAfter >= storedBefore);
+    }
 }

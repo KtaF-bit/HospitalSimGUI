@@ -13,7 +13,7 @@ import nz.ac.aut.comp603.hospitalsimgui.model.Room;
 
 /**
  *
- * @author GGPC
+ * @author Kobe Fabrello (22157634)
  */
 
 public class HospitalController {

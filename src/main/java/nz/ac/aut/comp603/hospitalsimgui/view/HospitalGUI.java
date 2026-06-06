@@ -17,7 +17,7 @@ import java.util.*;
 
 /**
  *
- * @author GGPC
+ * @author Kobe Fabrello (22157634)
  */
 public class HospitalGUI extends JFrame {
 

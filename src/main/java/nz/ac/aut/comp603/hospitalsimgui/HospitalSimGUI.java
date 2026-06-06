@@ -15,7 +15,7 @@ import javax.swing.SwingUtilities;
 
 /**
  *
- * @author GGPC
+ * @author Kobe Fabrello (22157634)
  */
 public class HospitalSimGUI {
 

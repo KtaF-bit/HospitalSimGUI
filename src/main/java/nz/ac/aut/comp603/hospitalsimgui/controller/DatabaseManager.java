@@ -6,7 +6,7 @@ package nz.ac.aut.comp603.hospitalsimgui.controller;
 
 /**
  *
- * @author GGPC
+ * @author Kobe Fabrello (22157634)
  */
 import java.sql.*;
 import java.util.List;

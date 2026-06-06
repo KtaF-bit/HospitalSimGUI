@@ -49,6 +49,7 @@ public class HospitalController {
     private void progressRooms() {
         System.out.println("→ TREATING PATIENTS");
         for (Room room : rooms) {
+            room.incrementWaitTime();
             room.progressTreatment();
         }
     }

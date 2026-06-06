@@ -5,6 +5,7 @@
 package nz.ac.aut.comp603.hospitalsimgui.model;
 
 import java.util.Set;
+import nz.ac.aut.comp603.hospitalsimgui.controller.HospitalController;
 
 /**
  *
@@ -94,21 +95,30 @@ public class Room {
     }
 
     // ✅ Progress treatment (important)
-    public void progressTreatment() {
+    public Patient progressTreatment() {
+
         if (patient != null && doctor != null) {
 
             patient.reduceTreatmentTime();
 
-            System.out.println("Treating patient (Level " + patient.getSicknessLevel() 
+            System.out.println("Treating patient (Level " 
+                + patient.getSicknessLevel() 
                 + ") - Time left: " + patient.getTreatmentTime());
 
             if (patient.isTreated()) {
 
-                System.out.println("Patient (Level " + patient.getSicknessLevel() + ") DISCHARGED");
+                System.out.println("Patient (Level " 
+                    + patient.getSicknessLevel() + ") DISCHARGED");
+
+                Patient finished = patient;
 
                 removeDoctor();
                 removePatient();
+
+                return finished; // ✅ RETURN IT
             }
         }
+
+        return null; // ✅ no discharge
     }
 }

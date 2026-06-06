@@ -57,8 +57,23 @@ public class HospitalGUI extends JFrame {
             openAddPatientDialog(panel);
         });
         
+        JButton statsButton = new JButton("Hospital Stats");
+        
+        statsButton.addActionListener(e -> {
+
+            String statsText = getStatsText();
+
+            JOptionPane.showMessageDialog(
+                this,
+                statsText,
+                "Hospital Statistics",
+                JOptionPane.INFORMATION_MESSAGE
+            );
+        });
+        
         buttonPanel.add(addPatientButton);
         buttonPanel.add(nextTickButton);
+        buttonPanel.add(statsButton);
 
         add(buttonPanel, "South");
         
@@ -116,6 +131,28 @@ public class HospitalGUI extends JFrame {
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
     }
+    
+    private String getStatsText() {
+
+        return "=== Hospital Statistics ===\n\n"
+
+            + "Total Patients Treated: " + controller.getTotalPatientsTreated() + "\n\n"
+
+            + "--- Patients Per Level ---\n"
+            + "Level 1: " + controller.getTreatedLevel1() + "\n"
+            + "Level 2: " + controller.getTreatedLevel2() + "\n"
+            + "Level 3: " + controller.getTreatedLevel3() + "\n\n"
+
+            + "--- Average Time in Hospital ---\n"
+            + "Overall: " + String.format("%.2f", controller.getAverageTime()) + "\n"
+            + "Level 1: " + String.format("%.2f", controller.getAverageTimeLevel1()) + "\n"
+            + "Level 2: " + String.format("%.2f", controller.getAverageTimeLevel2()) + "\n"
+            + "Level 3: " + String.format("%.2f", controller.getAverageTimeLevel3()) + "\n\n"
+
+            + "--- Doctor Work ---\n"
+            + "Total Work Time: " + controller.getTotalDoctorWorkTime();
+    }
+
 }
 
 class HospitalPanel extends JPanel {

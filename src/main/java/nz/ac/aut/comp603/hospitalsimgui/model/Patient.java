@@ -78,7 +78,7 @@ public class Patient {
     }
 
     public boolean isTreated() {
-        return treatmentTime == 0;
+        return treatmentTime <= 0;
     }
 
     public void incrementTimeInHospital() {

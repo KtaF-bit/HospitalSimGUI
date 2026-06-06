@@ -21,7 +21,7 @@ public class HospitalSimGUI {
 
     
     public static void main(String[] args) {
-
+//
 //        // Create rooms
 //        List<Room> rooms = new ArrayList<>();
 //        rooms.add(new Room(Set.of(1, 2)));

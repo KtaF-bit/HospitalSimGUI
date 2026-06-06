@@ -19,7 +19,8 @@ import nz.ac.aut.comp603.hospitalsimgui.model.Room;
 public class HospitalController {
     private final List<Room> rooms;
     private final List<Doctor> doctors;
-
+    private final Queue<Patient> waitingRoom;
+    private final int WAITING_ROOM_CAPACITY = 7;
     private final Queue<Patient> priorityQueue;
     private final Queue<Patient> normalQueue;
 
@@ -29,7 +30,7 @@ public class HospitalController {
     public HospitalController(List<Room> rooms, List<Doctor> doctors) {
         this.rooms = rooms;
         this.doctors = doctors;
-
+        this.waitingRoom = new LinkedList<>();
         this.priorityQueue = new LinkedList<>();
         this.normalQueue = new LinkedList<>();
 
@@ -54,32 +55,108 @@ public class HospitalController {
         }
     }
 
-    private void movePatientsToRooms() {
-        System.out.println("→ MOVING PATIENTS TO ROOM");
+    private void moveWaitingRoomToRooms() {
+        
         for (Room room : rooms) {
-
-           // Only work with free rooms
-           if (room.isFree()) {
-
-               Patient p = null;
-
-               // Try priority queue first
-               if (!priorityQueue.isEmpty() && room.canTreat(priorityQueue.peek().getSicknessLevel())) {
-                   p = priorityQueue.poll();
-               }
-               
-               // Otherwise try normal queue
-               else if (!normalQueue.isEmpty() && room.canTreat(normalQueue.peek().getSicknessLevel())) {
-                   p = normalQueue.poll();
-               }
-
-               // If we found a suitable patient, assign them
-               if (p != null) {
-                   room.assignPatient(p);
-               }
-           }
-       }
+            
+            if (room.isFree() && !waitingRoom.isEmpty()) {
+                
+                Patient p = waitingRoom.peek();
+                
+                if (room.canTreat(p.getSicknessLevel())) {
+                    waitingRoom.poll();
+                    room.assignPatient(p);
+                }
+            }
+        }
     }
+    
+    
+    private void moveOutsidePatients() {
+        
+        Patient p = null;
+        
+        // Priority Queue First
+        if (!priorityQueue.isEmpty()) {
+            p = priorityQueue.peek();
+        } else if (!normalQueue.isEmpty()) {
+            p = normalQueue.peek();
+        }
+        
+        if (p == null) return;
+        
+        for (Room room : rooms) {
+            if (room.isFree() && room.canTreat(p.getSicknessLevel())) {
+                if (p.getSicknessLevel() == Patient.SICKNESS_3) {
+                    priorityQueue.poll();
+                } else {
+                    normalQueue.poll();
+                }
+            
+                room.assignPatient(p);
+                return;
+            }
+        }
+        
+        if (waitingRoom.size() < WAITING_ROOM_CAPACITY) {
+            
+            if (p.getSicknessLevel() == Patient.SICKNESS_3) {
+                priorityQueue.poll();
+            } else {
+                normalQueue.poll();
+            }
+            
+            addToWaitingRoom(p);
+        }
+    }
+    
+    private void addToWaitingRoom(Patient p) {
+        
+        if (p.getSicknessLevel() == Patient.SICKNESS_3) {
+            
+            LinkedList<Patient> list = (LinkedList<Patient>) waitingRoom;
+            
+            int index = 0;
+        
+            for (Patient existing : list) {
+                if (existing.getSicknessLevel() == Patient.SICKNESS_3) {
+                    break;
+                }
+                index++;
+            }
+            
+            list.add(index, p);
+        } else {
+            waitingRoom.add(p);
+        }
+    }
+    
+//    private void movePatientsToRooms() {
+//        System.out.println("→ MOVING PATIENTS TO ROOM");
+//        for (Room room : rooms) {
+//
+//           // Only work with free rooms
+//           if (room.isFree()) {
+//
+//               Patient p = null;
+//
+//               // Try priority queue first
+//               if (!priorityQueue.isEmpty() && room.canTreat(priorityQueue.peek().getSicknessLevel())) {
+//                   p = priorityQueue.poll();
+//               }
+//               
+//               // Otherwise try normal queue
+//               else if (!normalQueue.isEmpty() && room.canTreat(normalQueue.peek().getSicknessLevel())) {
+//                   p = normalQueue.poll();
+//               }
+//
+//               // If we found a suitable patient, assign them
+//               if (p != null) {
+//                   room.assignPatient(p);
+//               }
+//           }
+//       }
+//    }
 
     private void assignDoctorsToRooms() {
         System.out.println("→ ASSIGNING DOCTORS");
@@ -104,7 +181,8 @@ public class HospitalController {
         tick++;
 
         progressRooms();
-        movePatientsToRooms();
+        moveWaitingRoomToRooms();
+        moveOutsidePatients();
         assignDoctorsToRooms();
     }
 }

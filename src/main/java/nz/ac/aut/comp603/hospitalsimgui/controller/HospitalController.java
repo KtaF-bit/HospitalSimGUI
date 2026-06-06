@@ -128,7 +128,7 @@ public class HospitalController {
 
         boolean moved = false;
 
-        // ✅ Try to move into a room
+        // Try to move into a room
         for (Room room : rooms) {
             if (room.isFree() && room.canTreat(p.getSicknessLevel())) {
 
@@ -147,7 +147,7 @@ public class HospitalController {
             }
         }
 
-        // ✅ If not moved → try waiting room
+        // If not moved → try waiting room
         if (!moved) {
             if (waitingRoom.size() < WAITING_ROOM_CAPACITY) {
 
@@ -166,7 +166,7 @@ public class HospitalController {
             }
         }
 
-        // ✅ If couldn't move anywhere → stop
+        // If couldn't move anywhere → stop
         if (!moved) break;
     }
 }
@@ -203,7 +203,7 @@ public class HospitalController {
             Room bestRoom = null;
             int maxWait = -1;
 
-            // ✅ STEP 1: find BEST Level 3 room (longest wait)
+            // STEP 1: find BEST Level 3 room (longest wait)
             for (Room room : rooms) {
                 if (room.getPatient() != null &&
                     room.getDoctor() == null &&
@@ -217,7 +217,7 @@ public class HospitalController {
                 }
             }
 
-            // ✅ STEP 2: if no Level 3 found → use general longest wait
+            // STEP 2: if no Level 3 found → use general longest wait
             if (bestRoom == null) {
 
                 maxWait = -1;
@@ -235,7 +235,7 @@ public class HospitalController {
                 }
             }
 
-            // ✅ ASSIGN
+            // ASSIGN
             if (bestRoom != null) {
                 bestRoom.assignDoctor(doctor);
 
@@ -283,12 +283,12 @@ public class HospitalController {
     public void nextTick() {
         tick++;
         
-        // ✅ Waiting room time
+        // Waiting room time
         for (Patient p : waitingRoom) {
             p.incrementTimeInHospital();
         }
 
-        // ✅ Rooms time
+        // Rooms time
         for (Room room : rooms) {
             if (room.getPatient() != null) {
                 room.getPatient().incrementTimeInHospital();
@@ -300,7 +300,7 @@ public class HospitalController {
         moveOutsidePatients();
         assignDoctorsToRooms();
 
-        // ✅ ADD THIS HERE
+        // ADD THIS HERE
         for (Room room : rooms) {
             if (room.getPatient() != null && room.getDoctor() != null) {
 

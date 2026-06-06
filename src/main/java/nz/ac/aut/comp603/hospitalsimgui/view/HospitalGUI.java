@@ -22,6 +22,7 @@ import java.util.*;
 public class HospitalGUI extends JFrame {
 
     private final HospitalController controller;
+    private JLabel totalPatientsLabel;
     
     public HospitalGUI() {
         setTitle("Hospital Simulator");
@@ -49,8 +50,13 @@ public class HospitalGUI extends JFrame {
         add(panel);
         JButton nextTickButton = new JButton("Next Tick");
         nextTickButton.addActionListener(e -> {
-            controller.nextTick();  // ✅ update system
-            panel.repaint();        // ✅ redraw GUI
+            controller.nextTick();
+            panel.repaint();
+
+            // update label
+            totalPatientsLabel.setText(
+                "Total Patients Treated: " + controller.getTotalPatientsTreated()
+            );
         });
         
         JPanel buttonPanel = new JPanel();
@@ -78,8 +84,11 @@ public class HospitalGUI extends JFrame {
         buttonPanel.add(nextTickButton);
         buttonPanel.add(statsButton);
 
-        add(buttonPanel, "South");
-        
+        // Add total patients label
+        totalPatientsLabel = new JLabel("Total Patients Treated: 0");
+        buttonPanel.add(totalPatientsLabel);
+
+        add(buttonPanel, BorderLayout.SOUTH);
         setVisible(true);
     }   
     
@@ -119,6 +128,7 @@ public class HospitalGUI extends JFrame {
             controller.addPatient(level);
             System.out.println("Added Patient Level " + level);
             panel.repaint();
+            totalPatientsLabel.setText("Total Patients Treated: " + controller.getTotalPatientsTreated());
         });
         buttonPanel.add(level1Btn);
         buttonPanel.add(level2Btn);
@@ -173,12 +183,12 @@ class HospitalPanel extends JPanel {
         });
     }
 
-    // ✅ HANDLE CLICKS
+    // HANDLE CLICKS
     private void handleClick(int mouseX, int mouseY) {
 
         List<Room> rooms = controller.getRooms();
 
-        // ✅ ROOM [i] clicks
+        // ROOM [i] clicks
         for (int i = 0; i < rooms.size(); i++) {
 
             int x = 300 + (i * 90);
@@ -196,7 +206,7 @@ class HospitalPanel extends JPanel {
             }
         }
 
-        // ✅ WAITING ROOM [i]
+        // WAITING ROOM [i]
         int wx = 230;
         int wy = 200;
         int size = 15;
@@ -208,7 +218,7 @@ class HospitalPanel extends JPanel {
         }
     }
 
-    // ✅ ROOM INFO POPUP
+    // ROOM INFO POPUP
     private void showRoomInfo(Room room, int roomNumber) {
 
         if (room.getPatient() == null) {
@@ -232,7 +242,7 @@ class HospitalPanel extends JPanel {
         JOptionPane.showMessageDialog(this, info, "Room Info", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    // ✅ WAITING ROOM INFO POPUP
+    // WAITING ROOM INFO POPUP
     private void showWaitingRoomInfo() {
 
         int total = controller.getWaitingRoomSize();
@@ -244,9 +254,19 @@ class HospitalPanel extends JPanel {
 
             int level = p.getSicknessLevel();
 
-            if (level == 1) l1++;
-            else if (level == 2) l2++;
-            else if (level == 3) l3++;
+            switch (level) {
+                case 1:
+                    l1++;
+                    break;
+                case 2:
+                    l2++;
+                    break;
+                case 3:
+                    l3++;
+                    break;
+                default:
+                    break;
+            }
 
             queueOrder.append(level).append(" → ");
         }
@@ -267,11 +287,11 @@ class HospitalPanel extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        // ✅ WAITING ROOM
+        // WAITING ROOM
         g.setColor(Color.LIGHT_GRAY);
         g.fillRect(50, 200, 200, 150);
 
-        // ✅ WAITING ROOM [i]
+        // WAITING ROOM [i]
         g.setColor(new Color(173, 216, 230));
         g.fillRect(230, 200, 15, 15);
 
@@ -283,7 +303,7 @@ class HospitalPanel extends JPanel {
 
         g.drawString("(" + controller.getWaitingRoomSize() + " patients)", 70, 220);
 
-        // ✅ STATUS LEGEND (colored dots)
+        // STATUS LEGEND (colored dots)
 
         // Green
         g.setColor(Color.GREEN);
@@ -297,7 +317,7 @@ class HospitalPanel extends JPanel {
         g.setColor(Color.BLACK);
         g.drawString("= Waiting for Doctor", 315, 160);
 
-        // ✅ ROOMS
+        // ROOMS
         List<Room> rooms = controller.getRooms();
 
         for (int i = 0; i < rooms.size(); i++) {
@@ -322,7 +342,7 @@ class HospitalPanel extends JPanel {
                 g.drawString("L" + room.getPatient().getSicknessLevel(), x + 10, y + 45);
             }
 
-            // ✅ STATUS INDICATOR
+            // STATUS INDICATOR
             Color indicatorColor;
 
             if (room.getPatient() == null) {
@@ -339,7 +359,7 @@ class HospitalPanel extends JPanel {
             g.setColor(Color.BLACK);
             g.drawOval(x + 5, y - 20, 10, 10);
 
-            // ✅ [i]
+            // [i]
             g.setColor(new Color(173, 216, 230));
             g.fillRect(x + 60, y, 15, 15);
 
@@ -348,7 +368,7 @@ class HospitalPanel extends JPanel {
             g.drawString("i", x + 65, y + 12);
         }
 
-        // ✅ HALLWAY
+        // HALLWAY
         g.setColor(Color.GRAY);
         g.fillRect(250, 300, 500, 40);
 

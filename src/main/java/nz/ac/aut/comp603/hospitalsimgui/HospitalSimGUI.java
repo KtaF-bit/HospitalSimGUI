@@ -36,32 +36,6 @@ public class HospitalSimGUI {
         doctors.add(new Doctor(Set.of(2,3))); // Doctor 3
 
         HospitalController controller = new HospitalController(rooms, doctors);
-        /*
-        // Add patients (designed to test everything)
-        
-        controller.addPatient(1);
-        controller.addPatient(2);
-        controller.addPatient(3);
-        controller.addPatient(1);
-        controller.addPatient(3);
-        controller.addPatient(2);
-        controller.addPatient(1);
-        controller.addPatient(2);
-        controller.addPatient(3);
-        controller.addPatient(1);
-
-
-        // Run simulation
-        for (int i = 1; i <= 10; i++) {
-
-            System.out.println("\n========== TICK " + i + " ==========");
-
-            controller.nextTick();
-
-            System.out.println("Tick complete.\n");
-        }
-        */
-
 
         SwingUtilities.invokeLater(() -> {
             new HospitalGUI();

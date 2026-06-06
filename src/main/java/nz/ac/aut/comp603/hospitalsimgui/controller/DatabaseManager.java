@@ -35,7 +35,7 @@ public class DatabaseManager {
             );
 
         } catch (SQLException e) {
-            // table already exists → ignore ✅
+            // table already exists → ignore
         }
     }
 

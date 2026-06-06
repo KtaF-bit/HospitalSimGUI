@@ -20,7 +20,7 @@ public class Room {
 
     private final Set<Integer> treatableLevels;
 
-    // ✅ Constructor
+    // Constructor
     public Room(Set<Integer> treatableLevels) {
         this.treatableLevels = treatableLevels;
         this.patient = null;
@@ -28,24 +28,24 @@ public class Room {
         this.waitTime = 0;
     }
 
-    // ✅ Check if room is free
+    // Check if room is free
     public boolean isFree() {
         return patient == null;
     }
 
-    // ✅ Check if room can treat sickness level
+    // Check if room can treat sickness level
     public boolean canTreat(int sicknessLevel) {
         return treatableLevels.contains(sicknessLevel);
     }
 
-    // ✅ Assign patient to room
+    // Assign patient to room
     public void assignPatient(Patient p) {
         this.patient = p;
         p.stopTreatment(); // waits until doctor assigned
         this.waitTime = 0;
     }
 
-    // ✅ Remove patient
+    // Remove patient
     public void removePatient() {
         this.patient = null;
         this.waitTime = 0;
@@ -55,7 +55,7 @@ public class Room {
         return patient;
     }
 
-    // ✅ Assign doctor
+    // Assign doctor
     public void assignDoctor(Doctor d) {
         if (patient != null && doctor == null) {
             this.doctor = d;
@@ -64,7 +64,7 @@ public class Room {
         }
     }
 
-    // ✅ Remove doctor
+    // Remove doctor
     public void removeDoctor() {
         if (patient != null) {
             patient.stopTreatment();
@@ -83,7 +83,7 @@ public class Room {
         return treatableLevels;
     }
 
-    // ✅ Wait time tracking
+    // Wait time tracking
     public void incrementWaitTime() {
         if (patient != null && doctor == null) {
             waitTime++;
@@ -94,7 +94,7 @@ public class Room {
         return waitTime;
     }
 
-    // ✅ Progress treatment (important)
+    // Progress treatment (important)
     public Patient progressTreatment() {
 
         if (patient != null && doctor != null) {
@@ -115,10 +115,10 @@ public class Room {
                 removeDoctor();
                 removePatient();
 
-                return finished; // ✅ RETURN IT
+                return finished; // RETURN IT
             }
         }
 
-        return null; // ✅ no discharge
+        return null; // no discharge
     }
 }

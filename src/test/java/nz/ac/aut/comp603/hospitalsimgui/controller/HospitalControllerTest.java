@@ -21,23 +21,23 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class HospitalControllerTest {
 
-    // ✅ HELPER METHOD to create controller correctly
+    // HELPER METHOD to create controller correctly
     private HospitalController createController() {
         List<Room> rooms = new ArrayList<>();
         List<Doctor> doctors = new ArrayList<>();
 
-        // ✅ Level set (can treat all levels)
+        // Level set (can treat all levels)
         java.util.Set<Integer> levels = new java.util.HashSet<>();
         levels.add(1);
         levels.add(2);
         levels.add(3);
 
-        // ✅ create rooms
+        // create rooms
         for (int i = 0; i < 3; i++) {
             rooms.add(new Room(levels));
         }
 
-        // ✅ create doctors
+        // create doctors
         for (int i = 0; i < 3; i++) {
             doctors.add(new Doctor(levels));
         }
@@ -45,7 +45,7 @@ public class HospitalControllerTest {
         return new HospitalController(rooms, doctors);
         }
 
-    // ✅ TEST 1: Level 3 goes to priority queue
+    // TEST 1: Level 3 goes to priority queue
     @Test
     public void testLevel3GoesToPriorityQueue() {
         HospitalController controller = createController();
@@ -56,7 +56,7 @@ public class HospitalControllerTest {
         assertEquals(0, controller.getNormalQueueSize());
     }
 
-    // ✅ TEST 2: Normal patient goes to normal queue
+    // TEST 2: Normal patient goes to normal queue
     @Test
     public void testNormalPatientQueue() {
         HospitalController controller = createController();
@@ -66,7 +66,7 @@ public class HospitalControllerTest {
         assertEquals(1, controller.getNormalQueueSize());
     }
 
-    // ✅ TEST 3: Waiting room capacity (max 7)
+    // TEST 3: Waiting room capacity (max 7)
     @Test
     public void testWaitingRoomCapacity() {
         HospitalController controller = createController();
@@ -78,7 +78,7 @@ public class HospitalControllerTest {
         assertTrue(controller.getWaitingRoomSize() <= 7);
     }
 
-    // ✅ TEST 4: Patients move into rooms
+    // TEST 4: Patients move into rooms
     @Test
     public void testPatientMovesToRoom() {
         HospitalController controller = createController();
@@ -97,7 +97,7 @@ public class HospitalControllerTest {
         assertTrue(found);
     }
 
-    // ✅ TEST 5: Doctor gets assigned
+    // TEST 5: Doctor gets assigned
     @Test
     public void testDoctorAssigned() {
         HospitalController controller = createController();
@@ -116,7 +116,7 @@ public class HospitalControllerTest {
         assertTrue(doctorAssigned);
     }
 
-    // ✅ TEST 6: Patients get discharged eventually
+    // TEST 6: Patients get discharged eventually
     @Test
     public void testPatientDischarge() {
         HospitalController controller = createController();
@@ -139,7 +139,7 @@ public class HospitalControllerTest {
         assertTrue(allEmpty);
     }
 
-    // ✅ TEST 7: Stats increase after treatment
+    // TEST 7: Stats increase after treatment
     @Test
     public void testStatsIncreaseAfterTreatment() {
         HospitalController controller = createController();

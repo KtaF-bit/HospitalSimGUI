@@ -16,18 +16,18 @@ public class Doctor {
     private final Set<Integer> treatableLevels;
     private boolean isBusy;
 
-    // ✅ Constructor
+    // Constructor
     public Doctor(Set<Integer> treatableLevels) {
         this.treatableLevels = treatableLevels;
         this.isBusy = false;
     }
 
-    // ✅ Check if doctor can treat sickness level
+    // Check if doctor can treat sickness level
     public boolean canTreat(int sicknessLevel) {
         return treatableLevels.contains(sicknessLevel);
     }
 
-    // ✅ Status methods
+    // Status methods
     public boolean isBusy() {
         return isBusy;
     }

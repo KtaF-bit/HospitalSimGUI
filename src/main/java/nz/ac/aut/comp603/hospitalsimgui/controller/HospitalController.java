@@ -389,5 +389,9 @@ public class HospitalController {
     public Queue<Patient> getWaitingRoom() {
         return waitingRoom;
     }
+    
+    public int getTotalPatientsFromDB() {
+        return db.getAllPatientStats().size();
+    }
 }
 

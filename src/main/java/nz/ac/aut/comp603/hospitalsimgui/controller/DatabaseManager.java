@@ -9,6 +9,8 @@ package nz.ac.aut.comp603.hospitalsimgui.controller;
  * @author GGPC
  */
 import java.sql.*;
+import java.util.List;
+import java.util.ArrayList;
 
 public class DatabaseManager {
 
@@ -53,5 +55,26 @@ public class DatabaseManager {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    
+    public List<int[]> getAllPatientStats() {
+        List<int[]> stats = new ArrayList<>();
+
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT level, timeInHospital FROM PatientStats");
+
+            while (rs.next()) {
+                int level = rs.getInt("level");
+                int time = rs.getInt("timeInHospital");
+
+                stats.add(new int[]{level, time});
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return stats;
     }
 }

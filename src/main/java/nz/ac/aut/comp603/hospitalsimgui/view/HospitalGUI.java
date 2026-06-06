@@ -23,6 +23,7 @@ public class HospitalGUI extends JFrame {
 
     private final HospitalController controller;
     private JLabel totalPatientsLabel;
+    private JLabel totalPatientsDBLabel;
     
     public HospitalGUI() {
         setTitle("Hospital Simulator");
@@ -54,6 +55,11 @@ public class HospitalGUI extends JFrame {
             panel.repaint();
 
             // update label
+            
+            totalPatientsDBLabel.setText(
+                "Total Patients (DB): " + controller.getTotalPatientsFromDB()
+            );
+
             totalPatientsLabel.setText(
                 "Total Patients Treated: " + controller.getTotalPatientsTreated()
             );
@@ -87,6 +93,8 @@ public class HospitalGUI extends JFrame {
         // Add total patients label
         totalPatientsLabel = new JLabel("Total Patients Treated: 0");
         buttonPanel.add(totalPatientsLabel);
+        totalPatientsDBLabel = new JLabel("Total Patients (DB): " + controller.getTotalPatientsFromDB());
+        buttonPanel.add(totalPatientsDBLabel);
 
         add(buttonPanel, BorderLayout.SOUTH);
         setVisible(true);
@@ -128,6 +136,7 @@ public class HospitalGUI extends JFrame {
             controller.addPatient(level);
             System.out.println("Added Patient Level " + level);
             panel.repaint();
+            totalPatientsDBLabel.setText("Total Patients (DB): " + controller.getTotalPatientsFromDB());
             totalPatientsLabel.setText("Total Patients Treated: " + controller.getTotalPatientsTreated());
         });
         buttonPanel.add(level1Btn);
@@ -148,6 +157,8 @@ public class HospitalGUI extends JFrame {
     private String getStatsText() {
 
         return "=== Hospital Statistics ===\n\n"
+                
+            + "Total Patients (DB): " + controller.getTotalPatientsFromDB() + "\n\n"
 
             + "Total Patients Treated: " + controller.getTotalPatientsTreated() + "\n\n"
 

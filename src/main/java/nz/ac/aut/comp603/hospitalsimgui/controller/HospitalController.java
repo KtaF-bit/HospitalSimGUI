@@ -384,5 +384,9 @@ public class HospitalController {
     public int getTotalDoctorWorkTime() {
         return totalDoctorWorkTime;
     }
+    
+    public Queue<Patient> getWaitingRoom() {
+        return waitingRoom;
+    }
 }
 

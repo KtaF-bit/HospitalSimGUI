@@ -4,6 +4,9 @@
  */
 package nz.ac.aut.comp603.hospitalsimgui.view;
 
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.JOptionPane;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import javax.swing.*;
@@ -159,10 +162,118 @@ class HospitalPanel extends JPanel {
     
     private final HospitalController controller;
     
-    
     public HospitalPanel(HospitalController controller) {
             this.controller = controller;
+            
+            addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    handleClick(e.getX(), e.getY());
+                }
+            });
         }
+    
+    private void handleClick(int mouseX, int mouseY) {
+        List<Room> rooms = controller.getRooms();
+
+        for (int i = 0; i < rooms.size(); i++) {
+
+            int x = 300 + (i * 90);
+            int y = 200;
+
+            // [i] box bounds
+            int ix = x + 60;
+            int iy = y;
+            int size = 15;
+
+            if (mouseX >= ix && mouseX <= ix + size &&
+                mouseY >= iy && mouseY <= iy + size) {
+
+                showRoomInfo(rooms.get(i), i + 1);
+                return;
+            }
+        }
+        
+        // Waiting room [i] box
+        int wx = 230;
+        int wy = 200;
+        int size = 15;
+
+        if (mouseX >= wx && mouseX <= wx + size &&
+            mouseY >= wy && mouseY <= wy + size) {
+
+            showWaitingRoomInfo();
+        }
+    }
+    
+    private void showRoomInfo(Room room, int roomNumber) {
+
+        if (room.getPatient() == null) {
+            JOptionPane.showMessageDialog(this,
+                "Room " + roomNumber + "\nEmpty",
+                "Room Info",
+                JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        Patient p = room.getPatient();
+
+        String info =
+            "Room " + roomNumber + "\n\n"
+            + "Patient Level: " + p.getSicknessLevel() + "\n"
+            + "Time in Hospital: " + p.getTimeInHospital() + "\n"
+            + "Treatment Time Left: " + p.getTreatmentTime() + "\n"
+            + "Wait Time: " + room.getWaitTime() + "\n"
+            + "Doctor Assigned: " + (room.getDoctor() != null ? "Yes" : "No");
+
+        JOptionPane.showMessageDialog(this,
+            info,
+            "Room Info",
+            JOptionPane.INFORMATION_MESSAGE);
+    }
+    
+    private void showWaitingRoomInfo() {
+
+        int total = controller.getWaitingRoomSize();
+        int l1 = 0, l2 = 0, l3 = 0;
+
+        for (Patient p : controller.getWaitingRoom()) {
+
+            switch (p.getSicknessLevel()) {
+                case 1:
+                    l1++;
+                    break;
+                case 2:
+                    l2++;
+                    break;
+                case 3:
+                    l3++;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        StringBuilder queueOrder = new StringBuilder();
+
+        for (Patient p : controller.getWaitingRoom()) {
+            queueOrder.append(p.getSicknessLevel()).append(" → ");
+        }
+
+        String info =
+            "Waiting Room\n\n"
+            + "Total Patients: " + total + "\n"
+            + "Level 1: " + l1 + "\n"
+            + "Level 2: " + l2 + "\n"
+            + "Level 3: " + l3 + "\n\n"
+            + "Queue Order:\n"
+            + queueOrder.toString();
+
+        JOptionPane.showMessageDialog(this,
+            info,
+            "Waiting Room Info",
+            JOptionPane.INFORMATION_MESSAGE);
+    }
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -171,6 +282,14 @@ class HospitalPanel extends JPanel {
         // ✅ WAITING ROOM
         g.setColor(Color.LIGHT_GRAY);
         g.fillRect(50, 200, 200, 150);
+        
+        // ✅ draw [i] box for waiting room
+        g.setColor(new Color(173, 216, 230));
+        g.fillRect(230, 200, 15, 15);
+
+        g.setColor(Color.BLACK);
+        g.drawRect(230, 200, 15, 15);
+        g.drawString("i", 235, 212);
 
         g.setColor(Color.BLACK);
         g.drawString("Waiting Room", 80, 190);
@@ -207,6 +326,14 @@ class HospitalPanel extends JPanel {
                 int level = room.getPatient().getSicknessLevel();
                 g.drawString("L" + level, x + 10, y + 45);
             }
+            
+            // ✅ draw [i] box (top-right corner of room)
+            g.setColor(new Color(173, 216, 230));
+            g.fillRect(x + 60, y, 15, 15);
+
+            g.setColor(Color.BLACK);
+            g.drawRect(x + 60, y, 15, 15);
+            g.drawString("i", x + 65, y + 12);
         }
 
         // ✅ HALLWAY

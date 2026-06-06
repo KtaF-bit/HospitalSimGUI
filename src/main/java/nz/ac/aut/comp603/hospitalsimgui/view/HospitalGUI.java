@@ -159,29 +159,31 @@ public class HospitalGUI extends JFrame {
 }
 
 class HospitalPanel extends JPanel {
-    
+
     private final HospitalController controller;
-    
+
     public HospitalPanel(HospitalController controller) {
-            this.controller = controller;
-            
-            addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    handleClick(e.getX(), e.getY());
-                }
-            });
-        }
-    
+        this.controller = controller;
+
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                handleClick(e.getX(), e.getY());
+            }
+        });
+    }
+
+    // ✅ HANDLE CLICKS
     private void handleClick(int mouseX, int mouseY) {
+
         List<Room> rooms = controller.getRooms();
 
+        // ✅ ROOM [i] clicks
         for (int i = 0; i < rooms.size(); i++) {
 
             int x = 300 + (i * 90);
             int y = 200;
 
-            // [i] box bounds
             int ix = x + 60;
             int iy = y;
             int size = 15;
@@ -193,8 +195,8 @@ class HospitalPanel extends JPanel {
                 return;
             }
         }
-        
-        // Waiting room [i] box
+
+        // ✅ WAITING ROOM [i]
         int wx = 230;
         int wy = 200;
         int size = 15;
@@ -205,7 +207,8 @@ class HospitalPanel extends JPanel {
             showWaitingRoomInfo();
         }
     }
-    
+
+    // ✅ ROOM INFO POPUP
     private void showRoomInfo(Room room, int roomNumber) {
 
         if (room.getPatient() == null) {
@@ -226,38 +229,26 @@ class HospitalPanel extends JPanel {
             + "Wait Time: " + room.getWaitTime() + "\n"
             + "Doctor Assigned: " + (room.getDoctor() != null ? "Yes" : "No");
 
-        JOptionPane.showMessageDialog(this,
-            info,
-            "Room Info",
-            JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, info, "Room Info", JOptionPane.INFORMATION_MESSAGE);
     }
-    
+
+    // ✅ WAITING ROOM INFO POPUP
     private void showWaitingRoomInfo() {
 
         int total = controller.getWaitingRoomSize();
         int l1 = 0, l2 = 0, l3 = 0;
 
-        for (Patient p : controller.getWaitingRoom()) {
-
-            switch (p.getSicknessLevel()) {
-                case 1:
-                    l1++;
-                    break;
-                case 2:
-                    l2++;
-                    break;
-                case 3:
-                    l3++;
-                    break;
-                default:
-                    break;
-            }
-        }
-
         StringBuilder queueOrder = new StringBuilder();
 
         for (Patient p : controller.getWaitingRoom()) {
-            queueOrder.append(p.getSicknessLevel()).append(" → ");
+
+            int level = p.getSicknessLevel();
+
+            if (level == 1) l1++;
+            else if (level == 2) l2++;
+            else if (level == 3) l3++;
+
+            queueOrder.append(level).append(" → ");
         }
 
         String info =
@@ -267,12 +258,9 @@ class HospitalPanel extends JPanel {
             + "Level 2: " + l2 + "\n"
             + "Level 3: " + l3 + "\n\n"
             + "Queue Order:\n"
-            + queueOrder.toString();
+            + queueOrder;
 
-        JOptionPane.showMessageDialog(this,
-            info,
-            "Waiting Room Info",
-            JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, info, "Waiting Room Info", JOptionPane.INFORMATION_MESSAGE);
     }
 
     @Override
@@ -282,8 +270,8 @@ class HospitalPanel extends JPanel {
         // ✅ WAITING ROOM
         g.setColor(Color.LIGHT_GRAY);
         g.fillRect(50, 200, 200, 150);
-        
-        // ✅ draw [i] box for waiting room
+
+        // ✅ WAITING ROOM [i]
         g.setColor(new Color(173, 216, 230));
         g.fillRect(230, 200, 15, 15);
 
@@ -291,14 +279,23 @@ class HospitalPanel extends JPanel {
         g.drawRect(230, 200, 15, 15);
         g.drawString("i", 235, 212);
 
-        g.setColor(Color.BLACK);
         g.drawString("Waiting Room", 80, 190);
 
-        // ✅ Show number of patients
-        g.drawString(
-            "(" + controller.getWaitingRoomSize() + " patients)", 
-            70, 220
-        );
+        g.drawString("(" + controller.getWaitingRoomSize() + " patients)", 70, 220);
+
+        // ✅ STATUS LEGEND (colored dots)
+
+        // Green
+        g.setColor(Color.GREEN);
+        g.fillOval(300, 135, 10, 10);
+        g.setColor(Color.BLACK);
+        g.drawString("= Being Treated", 315, 145);
+
+        // Red
+        g.setColor(Color.RED);
+        g.fillOval(300, 150, 10, 10);
+        g.setColor(Color.BLACK);
+        g.drawString("= Waiting for Doctor", 315, 160);
 
         // ✅ ROOMS
         List<Room> rooms = controller.getRooms();
@@ -310,24 +307,39 @@ class HospitalPanel extends JPanel {
             int x = 300 + (i * 90);
             int y = 200;
 
+            // Room box
             g.setColor(Color.WHITE);
             g.fillRect(x, y, 80, 80);
 
             g.setColor(Color.BLACK);
             g.drawRect(x, y, 80, 80);
 
-            // ✅ Room label
             g.drawString("Room " + (i + 1), x + 10, y + 20);
 
-            // ✅ Show status
             if (room.getPatient() == null) {
                 g.drawString("Empty", x + 10, y + 45);
             } else {
-                int level = room.getPatient().getSicknessLevel();
-                g.drawString("L" + level, x + 10, y + 45);
+                g.drawString("L" + room.getPatient().getSicknessLevel(), x + 10, y + 45);
             }
-            
-            // ✅ draw [i] box (top-right corner of room)
+
+            // ✅ STATUS INDICATOR
+            Color indicatorColor;
+
+            if (room.getPatient() == null) {
+                indicatorColor = Color.GRAY;
+            } else if (room.getDoctor() == null) {
+                indicatorColor = Color.RED;
+            } else {
+                indicatorColor = Color.GREEN;
+            }
+
+            g.setColor(indicatorColor);
+            g.fillOval(x + 5, y - 20, 10, 10);
+
+            g.setColor(Color.BLACK);
+            g.drawOval(x + 5, y - 20, 10, 10);
+
+            // ✅ [i]
             g.setColor(new Color(173, 216, 230));
             g.fillRect(x + 60, y, 15, 15);
 
@@ -339,14 +351,10 @@ class HospitalPanel extends JPanel {
         // ✅ HALLWAY
         g.setColor(Color.GRAY);
         g.fillRect(250, 300, 500, 40);
-        
+
         g.setColor(Color.BLACK);
 
-        int prioritySize = controller.getPriorityQueueSize();
-        int normalSize = controller.getNormalQueueSize();
-
-        // Bottom-left corner text
-        g.drawString("Priority Queue: " + prioritySize, 20, getHeight() - 40);
-        g.drawString("Normal Queue: " + normalSize, 20, getHeight() - 20);
+        g.drawString("Priority Queue: " + controller.getPriorityQueueSize(), 20, getHeight() - 40);
+        g.drawString("Normal Queue: " + controller.getNormalQueueSize(), 20, getHeight() - 20);
     }
 }

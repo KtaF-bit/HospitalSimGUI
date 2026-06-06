@@ -1,0 +1,14 @@
+# Build files
+target/
+*.class
+
+# Derby database
+HospitalDB/
+derby.log
+
+# NetBeans
+nb-configuration.xml
+nbactions.xml
+
+# OS files
+.DS_Store

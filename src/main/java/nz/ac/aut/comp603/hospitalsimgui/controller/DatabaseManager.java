@@ -18,8 +18,8 @@ public class DatabaseManager {
         try {
             conn = DriverManager.getConnection("jdbc:derby:HospitalDB;create=true");
             createTable();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (SQLException e) {
+            System.out.println("Database connection error: " + e.getMessage());
         }
     }
 

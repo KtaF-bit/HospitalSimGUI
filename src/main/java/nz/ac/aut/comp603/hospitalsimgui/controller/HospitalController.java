@@ -44,7 +44,7 @@ public class HospitalController {
     private int treatmentsLevel2 = 0;
     private int treatmentsLevel3 = 0;
 
-    
+    private DatabaseManager db;
     private int tick;
 
     // Constructor
@@ -54,7 +54,7 @@ public class HospitalController {
         this.waitingRoom = new LinkedList<>();
         this.priorityQueue = new LinkedList<>();
         this.normalQueue = new LinkedList<>();
-
+        db = new DatabaseManager();
         this.tick = 0;
     }
 
@@ -250,6 +250,7 @@ public class HospitalController {
     
     public void recordPatientStats(Patient p) {
         System.out.println("Recording stats for patient Level " + p.getSicknessLevel());
+        db.insertPatientStat(p.getSicknessLevel(), p.getTimeInHospital());
 
         totalPatientsTreated++;
         totalTimeInHospital += p.getTimeInHospital();
